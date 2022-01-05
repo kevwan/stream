@@ -12,6 +12,8 @@
 
 `stream` 其实是 [go-zero](https://github.com/zeromicro/go-zero) 的一部分，但是一些用户问我是不是可以单独使用 `stream` 而不用引入 `go-zero` 的依赖，所以我考虑再三，还是单独提供一个吧。但是，我强烈推荐你使用 `go-zero`，因为 `go-zero` 真的提供了很多很好的功能。
 
+![](https://oscimg.oschina.net/oscnet/up-486a677bcbe9181561d1ab6756fd05b1c9e.png)
+
 ## 什么是流处理
 
 如果有 java 使用经验的同学一定会对 java8 的 Stream 赞不绝口，极大的提高了们对于集合类型数据的处理能力。
