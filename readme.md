@@ -14,7 +14,7 @@ English | [简体中文](readme-cn.md)
 
 `mapreduce` is part of [go-zero](https://github.com/zeromicro/go-zero), but a few people asked if mapreduce can be used separately. But I recommend you to use `go-zero` for many more features.
 
-![](https://files.mdnice.com/user/3840/51fe00fe-050f-4415-b8b3-e487e8577fb8.png)
+<img src="https://files.mdnice.com/user/3840/51fe00fe-050f-4415-b8b3-e487e8577fb8.png" width="700">
 
 ## What is Stream Processing
 
@@ -98,7 +98,7 @@ Concat(streams ... . Stream) Stream
 
 The processing logic of the processing phase returns a new Stream object, and there is a basic implementation paradigm here.
 
-![](https://oscimg.oschina.net/oscnet/up-69691aa56051a4df1bd0a2a23d8795f7d92.png)
+<img src="https://oscimg.oschina.net/oscnet/up-69691aa56051a4df1bd0a2a23d8795f7d92.png" width="700">
 
 #### Aggregation stage
 
