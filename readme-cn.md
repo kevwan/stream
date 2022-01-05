@@ -12,7 +12,7 @@
 
 `stream` 其实是 [go-zero](https://github.com/zeromicro/go-zero) 的一部分，但是一些用户问我是不是可以单独使用 `stream` 而不用引入 `go-zero` 的依赖，所以我考虑再三，还是单独提供一个吧。但是，我强烈推荐你使用 `go-zero`，因为 `go-zero` 真的提供了很多很好的功能。
 
-<img src="https://oscimg.oschina.net/oscnet/up-486a677bcbe9181561d1ab6756fd05b1c9e.png" width="700">
+<img src="https://oscimg.oschina.net/oscnet/up-db431abd40479b215575831d598d68907ac.png" width="700">
 
 ## 什么是流处理
 
