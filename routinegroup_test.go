@@ -1,9 +1,6 @@
 package stream
 
 import (
-	"io/ioutil"
-	"log"
-	"sync"
 	"sync/atomic"
 	"testing"
 
@@ -22,24 +19,4 @@ func TestRoutineGroupRun(t *testing.T) {
 	group.Wait()
 
 	assert.Equal(t, int32(3), count)
-}
-
-func TestRoutingGroupRunSafe(t *testing.T) {
-	log.SetOutput(ioutil.Discard)
-
-	var count int32
-	group := NewRoutineGroup()
-	var once sync.Once
-	for i := 0; i < 3; i++ {
-		group.RunSafe(func() {
-			once.Do(func() {
-				panic("")
-			})
-			atomic.AddInt32(&count, 1)
-		})
-	}
-
-	group.Wait()
-
-	assert.Equal(t, int32(2), count)
 }

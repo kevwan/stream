@@ -262,17 +262,6 @@ func TestMap(t *testing.T) {
 				},
 				expect: 10,
 			},
-			{
-				name: "mapper with panic",
-				mapper: func(item interface{}) interface{} {
-					v := item.(int)
-					if v%2 == 0 {
-						panic(v)
-					}
-					return v * v
-				},
-				expect: 10,
-			},
 		}
 
 		// Map(...) works even WithWorkers(0)

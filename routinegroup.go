@@ -24,18 +24,6 @@ func (g *RoutineGroup) Run(fn func()) {
 	}()
 }
 
-// RunSafe runs the given fn in RoutineGroup, and avoid panics.
-// Don't reference the variables from outside,
-// because outside variables can be changed by other goroutines
-func (g *RoutineGroup) RunSafe(fn func()) {
-	g.waitGroup.Add(1)
-
-	GoSafe(func() {
-		defer g.waitGroup.Done()
-		fn()
-	})
-}
-
 // Wait waits all running functions to be done.
 func (g *RoutineGroup) Wait() {
 	g.waitGroup.Wait()
