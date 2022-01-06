@@ -1,6 +1,6 @@
 <img align="right" width="150px" src="https://raw.githubusercontent.com/zeromicro/zero-doc/main/doc/images/go-zero.png">
 
-# mapreduce
+# stream
 
 English | [简体中文](readme-cn.md)
 
@@ -12,7 +12,7 @@ English | [简体中文](readme-cn.md)
 
 ## Why we have this repo
 
-`mapreduce` is part of [go-zero](https://github.com/zeromicro/go-zero), but a few people asked if mapreduce can be used separately. But I recommend you to use `go-zero` for many more features.
+`stream` is part of [go-zero](https://github.com/zeromicro/go-zero), but a few people asked if `fx` (it’s called fx in go-zero) can be used separately. But I recommend you to use `go-zero` for many more features.
 
 <img src="https://files.mdnice.com/user/3840/51fe00fe-050f-4415-b8b3-e487e8577fb8.png" width="700">
 
