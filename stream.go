@@ -25,7 +25,7 @@ type (
 	// GenerateFunc defines the method to send elements into a Stream.
 	GenerateFunc[T any] func(source chan<- T)
 	// KeyFunc defines the method to generate keys for the elements in a Stream.
-	KeyFunc[T, U any] func(item T) U
+	KeyFunc[T any] func(item T) interface{}
 	// LessFunc defines the method to compare the elements in a Stream.
 	LessFunc[T any] func(a, b T) bool
 	// MapFunc defines the method to map each element to another object in a Stream.
@@ -165,13 +165,13 @@ func (s Stream[T]) Count() (count int) {
 }
 
 // Distinct removes the duplicated items base on the given KeyFunc.
-func (s Stream[T, U]) Distinct(fn KeyFunc[U]) Stream[T] {
+func (s Stream[T]) Distinct(fn KeyFunc[T]) Stream[T] {
 	source := make(chan T)
 
 	go func() {
 		defer close(source)
 
-		keys := make(map[U]struct{})
+		keys := make(map[interface{}]struct{})
 		for item := range s.source {
 			key := fn(item)
 			if _, ok := keys[key]; !ok {
@@ -224,14 +224,14 @@ func (s Stream[T]) ForEach(fn ForEachFunc[T]) {
 }
 
 // Group groups the elements into different groups based on their keys.
-func (s Stream[T, U]) Group(fn KeyFunc[U]) Stream[T] {
-	groups := make(map[interface{}][]interface{})
+func (s Stream[T]) Group(fn KeyFunc[T]) Stream[[]T] {
+	groups := make(map[interface{}][]T)
 	for item := range s.source {
 		key := fn(item)
 		groups[key] = append(groups[key], item)
 	}
 
-	source := make(chan interface{})
+	source := make(chan []T)
 	go func() {
 		for _, group := range groups {
 			source <- group
@@ -282,7 +282,7 @@ func (s Stream[T]) Last() (item T) {
 }
 
 // Map converts each item to another corresponding item, which means it's a 1:1 model.
-func (s Stream[T, U]) Map(fn MapFunc[U], opts ...Option) Stream[U] {
+func (s Stream[T]) Map(fn MapFunc[T, U any], opts ...Option) Stream[U] {
 	return s.Walk(func(item T, pipe chan<- U) {
 		pipe <- fn(item)
 	}, opts...)
