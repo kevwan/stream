@@ -82,6 +82,8 @@ Head(n int64) Stream
 Tail(n int64) Stream
 // 转换对象
 Map(fn MapFunc, opts ...Option) Stream
+// 将每个item分别转换为Stream，并将其合并为一个Stream
+FlatMap(fn FlatMapFunc, opts ...Option) Stream
 // 合并item到slice生成新的stream
 Merge() Stream
 // 反转
@@ -137,7 +139,9 @@ KeyFunc func(item interface{}) interface{}
 // 过滤函数
 FilterFunc func(item interface{}) bool
 // 对象转换函数
-MapFunc func(intem interface{}) interface{}
+MapFunc func(item interface{}) interface{}
+// 将每个item转换为Stream
+FlatMapFunc func(item interface{}) Stream
 // 对象比较
 LessFunc func(a, b interface{}) bool
 // 遍历函数
@@ -172,6 +176,8 @@ Stream interface {
   Last() interface{}
   // 转换对象
   Map(fn MapFunc, opts ...Option) Stream
+  // 将每个item分别转换为Stream，并将其合并为一个Stream
+  FlatMap(fn FlatMapFunc, opts ...Option) Stream
   // 合并item到slice生成新的stream
   Merge() Stream
   // 反转
@@ -704,6 +710,35 @@ func (s Stream) Map(fn MapFunc, opts ...Option) Stream {
 func TestInternalStream_Map(t *testing.T) {
   channel := Just(1, 2, 3, 4, 5, 2, 2, 2, 2, 2, 2).Map(func(item interface{}) interface{} {
     return item.(int) * 10
+  }).channel()
+  for item := range channel {
+    t.Log(item)
+  }
+}
+```
+
+#### 元素转换FlatMap
+
+元素转换，内部由协程完成转换操作，注意输出channel并不保证按原序输出。
+
+```go
+FlatMap func(fn FlatMapFunc, opts ...Option) Stream {
+  return s.Walk(func(item interface{}, pipe chan<- interface{}) {
+    otherStream := fn(item)
+	for other := range otherStream.source {
+	  pipe <- other
+	}
+  }, opts...)
+}
+```
+
+使用示例：
+
+```go
+func TestInternalStream_FlatMap(t *testing.T) {
+  channel := Just(1, 2, 3, 4).FlatMap(func(item interface{}) Stream {
+	// 将每个item映射成2个同样的item  
+    return Just(item, item)
   }).channel()
   for item := range channel {
     t.Log(item)

@@ -30,6 +30,8 @@ type (
 	LessFunc func(a, b interface{}) bool
 	// MapFunc defines the method to map each element to another object in a Stream.
 	MapFunc func(item interface{}) interface{}
+	// FlatMapFunc defines the method to map each element to another Stream in a Stream.
+	FlatMapFunc func(item interface{}) Stream
 	// Option defines the method to customize a Stream.
 	Option func(opts *rxOptions)
 	// ParallelFunc defines the method to handle elements parallelly.
@@ -285,6 +287,16 @@ func (s Stream) Last() (item interface{}) {
 func (s Stream) Map(fn MapFunc, opts ...Option) Stream {
 	return s.Walk(func(item interface{}, pipe chan<- interface{}) {
 		pipe <- fn(item)
+	}, opts...)
+}
+
+// FlatMap returns a Stream that flattens the result of the given FlatMapFunc, which means it's a 1:N model.
+func (s Stream) FlatMap(fn FlatMapFunc, opts ...Option) Stream {
+	return s.Walk(func(item interface{}, pipe chan<- interface{}) {
+		otherStream := fn(item)
+		for other := range otherStream.source {
+			pipe <- other
+		}
 	}, opts...)
 }
 

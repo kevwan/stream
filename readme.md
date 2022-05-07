@@ -139,7 +139,9 @@ KeyFunc func(item interface{}) interface{}
 // filter function
 FilterFunc func(item interface{}) bool
 // object conversion function
-MapFunc func(intem interface{}) interface{}
+MapFunc func(item interface{}) interface{}
+// convert each item to Stream separately and combine them into one Stream
+FlatMapFunc func(item interface{}) Stream
 // object comparison
 LessFunc func(a, b interface{}) bool
 // traversal function
@@ -174,6 +176,8 @@ Stream interface {
   Last() interface{}
   // Convert the object
   Map(fn MapFunc, opts . . Option) Stream
+  // FlatMap returns a Stream that flattens the result of the given FlatMapFunc, which means it's a 1:N model.
+  FlatMap(fn FlatMapFunc, opts . . Option) Stream
   // Merge items into slice to create a new stream
   Merge() Stream
   // Reverse
@@ -706,6 +710,35 @@ Example usage.
 func TestInternalStream_Map(t *testing.T) {
   channel := Just(1, 2, 3, 4, 5, 2, 2, 2, 2, 2, 2, 2).Map(func(item interface{}) interface{} {
     return item.(int) * 10
+  }).channel()
+  for item := range channel {
+    t.Log(item)
+  }
+}
+```
+
+#### element conversion FlatMap
+
+Element conversion, internally done by a concurrent process to complete the conversion operation, note that the output channel is not guaranteed to be output in the original order.
+
+```go
+FlatMap func(fn FlatMapFunc, opts ...Option) Stream {
+  return s.Walk(func(item interface{}, pipe chan<- interface{}) {
+    otherStream := fn(item)
+	for other := range otherStream.source {
+	  pipe <- other
+	}
+  }, opts...)
+}
+```
+
+Example usage.
+
+```go
+func TestInternalStream_FlatMap(t *testing.T) {
+  channel := Just(1, 2, 3, 4).FlatMap(func(item interface{}) Stream {
+	// Map each item to 2 identical items  
+    return Just(item, item)
   }).channel()
   for item := range channel {
     t.Log(item)

@@ -292,6 +292,61 @@ func TestMap(t *testing.T) {
 	})
 }
 
+func TestFlatMap(t *testing.T) {
+	runCheckedTest(t, func(t *testing.T) {
+		log.SetOutput(ioutil.Discard)
+
+		tests := []struct {
+			name      string
+			mapper    FlatMapFunc
+			expect    int
+			expectNum int
+		}{
+			{
+				name: "flat map with square",
+				mapper: func(item interface{}) Stream {
+					return Just(item).Map(func(item interface{}) interface{} {
+						v := item.(int)
+						return v * v
+					})
+				},
+				expect:    30,
+				expectNum: 4,
+			},
+			{
+				name: "flat map to double items",
+				mapper: func(item interface{}) Stream {
+					return Just(item, item).Map(func(item interface{}) interface{} {
+						v := item.(int)
+						return v * v
+					})
+				},
+				expect:    60,
+				expectNum: 8,
+			},
+		}
+		for _, test := range tests {
+			t.Run(test.name, func(t *testing.T) {
+				var result int
+				var num int
+				From(func(source chan<- interface{}) {
+					for i := 1; i < 5; i++ {
+						source <- i
+					}
+				}).FlatMap(test.mapper).Reduce(func(pipe <-chan interface{}) (interface{}, error) {
+					for item := range pipe {
+						result += item.(int)
+						num++
+					}
+					return result, nil
+				})
+				assert.Equal(t, test.expect, result)
+				assert.Equal(t, test.expectNum, num)
+			})
+		}
+	})
+}
+
 func TestMerge(t *testing.T) {
 	runCheckedTest(t, func(t *testing.T) {
 		Just(1, 2, 3, 4).Merge().ForEach(func(item interface{}) {
