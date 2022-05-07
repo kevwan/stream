@@ -290,7 +290,7 @@ func (s Stream) Map(fn MapFunc, opts ...Option) Stream {
 	}, opts...)
 }
 
-// FlatMap returns a Stream that flattens the result of the given FlatMapFunc.
+// FlatMap returns a Stream that flattens the result of the given FlatMapFunc, which means it's a 1:N model.
 func (s Stream) FlatMap(fn FlatMapFunc, opts ...Option) Stream {
 	return s.Walk(func(item interface{}, pipe chan<- interface{}) {
 		otherStream := fn(item)
